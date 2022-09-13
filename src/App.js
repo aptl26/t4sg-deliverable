@@ -134,7 +134,7 @@ export default function App() {
             </Stack>
           </Grid>
           <Grid item xs={12}>
-            <EntryTable entries={entries} />
+            <EntryTable entries={entries} user={currentUser} />
           </Grid>
         </Grid>
       )

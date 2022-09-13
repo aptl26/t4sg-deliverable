@@ -13,7 +13,9 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import { useState } from 'react';
 import { categories } from '../utils/categories';
-import { addEntry } from '../utils/mutations';
+import { addEntry, updateEntry, deleteEntry } from '../utils/mutations';
+
+
 
 // Modal component for individual entries.
 
@@ -46,9 +48,23 @@ export default function EntryModal({ entry, type, user }) {
       setCategory(entry.category);
    };
 
+
    const handleClose = () => {
       setOpen(false);
    };
+
+   const handleEdit = () => {
+      const editedEntry = {
+         name: name,
+         link: link,
+         description: description,
+         user: user.displayName ? user.displayName : "Default",
+         category: category,
+         userid: user?.uid,
+      };
+      updateEntry(editedEntry, entry.id).catch(console.error)
+      handleClose();
+   }
 
    // Mutation handlers
 
@@ -57,12 +73,16 @@ export default function EntryModal({ entry, type, user }) {
          name: name,
          link: link,
          description: description,
-         user: user?.displayName,
+         user: user.displayName ? user.displayName : "Default",
          category: category,
          userid: user?.uid,
       };
 
       addEntry(newEntry).catch(console.error);
+      handleClose();
+   };
+   const handleDelete = () => {
+      deleteEntry(entry.id).catch(console.error);
       handleClose();
    };
 
@@ -78,7 +98,8 @@ export default function EntryModal({ entry, type, user }) {
       type === "edit" ? <IconButton onClick={handleClickOpen}>
          <OpenInNewIcon />
       </IconButton>
-         : type === "add" ? <Button variant="contained" onClick={handleClickOpen}>
+         : type === "add" ? 
+         <Button variant="contained" onClick={handleClickOpen}>
             Add entry
          </Button>
             : null;
@@ -86,7 +107,9 @@ export default function EntryModal({ entry, type, user }) {
    const actionButtons =
       type === "edit" ?
          <DialogActions>
+            <Button color="secondary" onClick={handleDelete}>Delete</Button>         
             <Button onClick={handleClose}>Cancel</Button>
+            <Button variant="contained" onClick={handleEdit}>Edit</Button>
          </DialogActions>
          : type === "add" ?
             <DialogActions>
